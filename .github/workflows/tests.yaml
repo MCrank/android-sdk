@@ -45,7 +45,7 @@ jobs:
 
       - name: Set the Network
         env:
-          NETWORK_UNDER_TEST: ${{ github.even.inputs.network }}
+          NETWORK_UNDER_TEST: ${{ github.event.inputs.network }}
         run: sed -i 's/TestEnvironment.ALPHA/'"TestEnvironment.${NETWORK_UNDER_TEST}"'/g' android-sdk/src/androidTest/java/com/mobilecoin/lib/Environment.java
 
       - name: Provide DevNet Entropies
