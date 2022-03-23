@@ -35,8 +35,11 @@ jobs:
         run: |
           echo '${{ secrets.GCP_SERVICE_KEY }}' > "service-key.json"
 
-      - name: Verify output
-        run: cat service-key.json
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: JSON_FILE
+          path: service-key.json
 
       # - name: Provide Dev Credentials
       #   env:
