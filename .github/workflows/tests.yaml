@@ -35,33 +35,27 @@ jobs:
         run: |
           echo '${{ secrets.GCP_SERVICE_KEY }}' > "service-key.json"
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: JSON_FILE
-          path: service-key.json
+      - name: Provide Dev Credentials
+        env:
+          TEST_DEV_USER: ${{ secrets.TEST_DEV_USER }}
+          TEST_DEV_PASSWORD: ${{ secrets.TEST_DEV_PASSWORD }}
+        run: |
+          sed -i 's/REPLACE_TEST_DEV_USER_STRING/'"${TEST_DEV_USER}"'/g' android-sdk/src/androidTest/java/com/mobilecoin/lib/TestFogConfig.java && \
+          sed -i 's/REPLACE_TEST_DEV_PASSWORD_STRING/'"${TEST_DEV_PASSWORD}"'/g' android-sdk/src/androidTest/java/com/mobilecoin/lib/TestFogConfig.java
 
-      # - name: Provide Dev Credentials
-      #   env:
-      #     TEST_DEV_USER: ${{ secrets.TEST_DEV_USER }}
-      #     TEST_DEV_PASSWORD: ${{ secrets.TEST_DEV_PASSWORD }}
-      #   run: |
-      #     sed -i 's/REPLACE_TEST_DEV_USER_STRING/'"${TEST_DEV_USER}"'/g' android-sdk/src/androidTest/java/com/mobilecoin/lib/TestFogConfig.java && \
-      #     sed -i 's/REPLACE_TEST_DEV_PASSWORD_STRING/'"${TEST_DEV_PASSWORD}"'/g' android-sdk/src/androidTest/java/com/mobilecoin/lib/TestFogConfig.java
+      - name: Set the Network
+        env:
+          NETWORK_UNDER_TEST: ${{ github.event.inputs.network }}
+        run: sed -i 's/TestEnvironment.ALPHA/'"TestEnvironment.${NETWORK_UNDER_TEST}"'/g' android-sdk/src/androidTest/java/com/mobilecoin/lib/Environment.java
 
-      # - name: Set the Network
-      #   env:
-      #     NETWORK_UNDER_TEST: ${{ github.event.inputs.network }}
-      #   run: sed -i 's/TestEnvironment.ALPHA/'"TestEnvironment.${NETWORK_UNDER_TEST}"'/g' android-sdk/src/androidTest/java/com/mobilecoin/lib/Environment.java
+      - name: Provide DevNet Entropies
+        run: echo "${{ secrets.DEV_NET_ENTROPIES }}" > "android-sdk/src/androidTest/res/raw/dev_net_root_entropies"
 
-      # - name: Provide DevNet Entropies
-      #   run: echo "${{ secrets.DEV_NET_ENTROPIES }}" > "android-sdk/src/androidTest/res/raw/dev_net_root_entropies"
+      - name: Provide TestNet Mnemonics
+        run: echo "${{ secrets.TEST_NET_MNEMONICS }}" > "android-sdk/src/androidTest/res/raw/test_net_mnemonics"
 
-      # - name: Provide TestNet Mnemonics
-      #   run: echo "${{ secrets.TEST_NET_MNEMONICS }}" > "android-sdk/src/androidTest/res/raw/test_net_mnemonics"
+      - name: Build
+        run: make build
 
-      # - name: Build
-      #   run: make build
-
-      # - name: Test
-      #   run: make tests
+      - name: Test
+        run: make tests
