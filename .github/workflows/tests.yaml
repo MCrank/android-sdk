@@ -33,7 +33,7 @@ jobs:
 
       - name: GCP Service Account
         run: |
-          echo "${{ GCP_SERVICE_KEY }}" > "service-key.json"
+          echo "${{ secrets.GCP_SERVICE_KEY }}" > "service-key.json"
 
       - name: Verify output
         run: |
