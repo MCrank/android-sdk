@@ -2,6 +2,7 @@
 gradle :testApp:assembleDebug
 gradle :android-sdk:assembleGrpcDebugAndroidTest
 
+gcloud --version
 gcloud config set project mobilecoin-60c
 gcloud auth activate-service-account \
     ci-service-account@mobilecoin-60c.iam.gserviceaccount.com \
