@@ -1,4 +1,4 @@
-name: test
+name: sdk-tests
 
 # Secrets Needed
 #   GCP_SERVICE_KEY
@@ -58,4 +58,5 @@ jobs:
         run: make build
 
       - name: Test
+        timeout-minutes: 60
         run: make tests
